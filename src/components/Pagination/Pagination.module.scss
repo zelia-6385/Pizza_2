@@ -1,0 +1,33 @@
+.root {
+  li {
+    display: inline-flex;
+    margin-right: 10px;
+
+    a {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 45px;
+      height: 45px;
+      border: 1px solid #fe5f1e;
+      color: #fe5f1e;
+      border-radius: 30px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #fe5f1e;
+        color: #fff;
+      } 
+    }
+  }
+
+  // styles for libraries classes in scss modules
+  :global {
+    .selected {
+      a {
+        background-color: #fe5f1e;
+        color: #fff;
+      }
+    }
+  }
+}
