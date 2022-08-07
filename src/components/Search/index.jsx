@@ -1,10 +1,34 @@
-import { useContext } from 'react';
+import { useCallback, useContext, useRef, useState } from 'react';
+import { debounce } from 'lodash';
+
 import { SearchContext } from '../../App';
 
 import styles from './Search.module.scss';
 
 const Search = () => {
-  const { searchValue, setSearchValue } = useContext(SearchContext);
+  // локальный контролируемый инпут (отвечает за быстрое отображение данных в инпуте)
+  const [value, setValue] = useState('');
+
+  // отложенная через debounce запись инпута (используется в другом компоненте для отправки запроса)
+  const { setSearchValue } = useContext(SearchContext);
+
+  const inputRef = useRef(null);
+
+  const onClickClear = () => {
+    setSearchValue('');
+    setValue('');
+    inputRef.current.focus();
+  };
+
+  // const fireDebounce = () => debounce(setSearchValue, 250);
+
+  // useCallback позволяет не пересоздавать функцию при каждом обновлении компонента (сохраняется ссылка на функцию). Только в этом случае debounce работает корректно
+  const updateSearchValue = useCallback(debounce(setSearchValue, 1000), []);
+
+  const onChangeInput = (event) => {
+    setValue(event.target.value);
+    updateSearchValue(event.target.value);
+  };
 
   return (
     <div className={styles.root}>
@@ -23,14 +47,15 @@ const Search = () => {
         </g>
       </svg>
       <input
-        value={searchValue}
-        onChange={(event) => setSearchValue(event.target.value)}
+        ref={inputRef}
+        value={value}
+        onChange={onChangeInput}
         className={styles.input}
         placeholder="Поиск пиццы ..."
       />
-      {searchValue && (
+      {value && (
         <svg
-          onClick={() => setSearchValue('')}
+          onClick={onClickClear}
           className={styles.clearIcon}
           data-name="Capa 1"
           id="Capa_1"
