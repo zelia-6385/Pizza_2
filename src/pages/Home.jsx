@@ -10,7 +10,7 @@ import Sort, { sortList } from '../components/Sort';
 import Skeleton from '../components/PizzaBlock/Skeleton';
 import Pagination from '../components/Pagination';
 
-import { SearchContext } from '../App';
+import { SearchContext } from '../layouts/MainLayout';
 
 import {
   setCategoryId,

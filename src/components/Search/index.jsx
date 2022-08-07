@@ -1,7 +1,7 @@
 import { useCallback, useContext, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 
-import { SearchContext } from '../../App';
+import { SearchContext } from '../../layouts/MainLayout';
 
 import styles from './Search.module.scss';
 
