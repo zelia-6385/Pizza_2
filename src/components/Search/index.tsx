@@ -1,38 +1,50 @@
-import { useCallback, useContext, useRef, useState } from 'react';
-import { debounce } from 'lodash';
+import {
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+  FC,
+  ChangeEvent,
+} from "react";
+import { debounce } from "lodash";
 
-import { SearchContext } from '../../layouts/MainLayout';
+import { SearchContext } from "../../layouts/MainLayout";
 
-import styles from './Search.module.scss';
+import styles from "./Search.module.scss";
 
-const Search = () => {
+const Search: FC = () => {
   // локальный контролируемый инпут (отвечает за быстрое отображение данных в инпуте)
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState("");
 
   // отложенная через debounce запись инпута (используется в другом компоненте для отправки запроса)
   const { setSearchValue } = useContext(SearchContext);
 
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const onClickClear = () => {
-    setSearchValue('');
-    setValue('');
-    inputRef.current.focus();
+    setSearchValue("");
+    setValue("");
+    inputRef.current?.focus();
   };
 
   // const fireDebounce = () => debounce(setSearchValue, 250);
 
   // useCallback позволяет не пересоздавать функцию при каждом обновлении компонента (сохраняется ссылка на функцию). Только в этом случае debounce работает корректно
-  const updateSearchValue = useCallback(debounce(setSearchValue, 1000), []);
+  const updateSearchValue = useCallback(debounce(setSearchValue, 150), []);
 
-  const onChangeInput = (event) => {
+  const onChangeInput = (event: ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
     updateSearchValue(event.target.value);
   };
 
   return (
     <div className={styles.root}>
-      <svg className={styles.icon} id="Layer_1" version="1.1" viewBox="0 0 64 64">
+      <svg
+        className={styles.icon}
+        id="Layer_1"
+        version="1.1"
+        viewBox="0 0 64 64"
+      >
         <g>
           <g id="Icon-Search" transform="translate(30.000000, 230.000000)">
             <path
@@ -60,7 +72,8 @@ const Search = () => {
           data-name="Capa 1"
           id="Capa_1"
           viewBox="0 0 20 19.84"
-          xmlns="http://www.w3.org/2000/svg">
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <path d="M10.17,10l3.89-3.89a.37.37,0,1,0-.53-.53L9.64,9.43,5.75,5.54a.37.37,0,1,0-.53.53L9.11,10,5.22,13.85a.37.37,0,0,0,0,.53.34.34,0,0,0,.26.11.36.36,0,0,0,.27-.11l3.89-3.89,3.89,3.89a.34.34,0,0,0,.26.11.35.35,0,0,0,.27-.11.37.37,0,0,0,0-.53Z" />
         </svg>
       )}

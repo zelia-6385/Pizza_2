@@ -1,16 +1,18 @@
-import { useEffect, useContext, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import qs from 'qs';
-import { isEqual } from 'lodash';
+import { useEffect, useContext, useRef, FC, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import qs from "qs";
+import { isEqual } from "lodash";
 
-import Categories from '../components/Categories';
-import PizzaBlock from '../components/PizzaBlock';
-import Sort, { sortList } from '../components/Sort';
-import Skeleton from '../components/PizzaBlock/Skeleton';
-import Pagination from '../components/Pagination';
+import { useAppDispatch } from "../redux/store";
 
-import { SearchContext } from '../layouts/MainLayout';
+import Categories from "../components/Categories";
+import PizzaBlock from "../components/PizzaBlock";
+import Sort, { sortList } from "../components/Sort";
+import Skeleton from "../components/PizzaBlock/Skeleton";
+import Pagination from "../components/Pagination";
+
+import { SearchContext } from "../layouts/MainLayout";
 
 import {
   setCategoryId,
@@ -18,12 +20,16 @@ import {
   setFilters,
   initialState,
   selectFilter,
-} from '../redux/slices/filterSlice';
-import { fetchPizzas, selectPizzaData } from '../redux/slices/pizzaSlice';
+} from "../redux/slices/filterSlice";
+import {
+  fetchPizzas,
+  SearchPizzaParamsType,
+  selectPizzaData,
+} from "../redux/slices/pizzaSlice";
 
-const Home = () => {
+const Home: FC = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
@@ -32,15 +38,18 @@ const Home = () => {
 
   const { searchValue } = useContext(SearchContext);
 
-  const onChangeCategory = (id) => dispatch(setCategoryId(id));
+  const onChangeCategory = useCallback(
+    (id: number) => dispatch(setCategoryId(id)),
+    []
+  );
 
-  const onChangePage = (number) => dispatch(setCurrentPage(number));
+  const onChangePage = (page: number) => dispatch(setCurrentPage(page));
 
   const getPizzas = async () => {
-    const order = sort.sortProperty.includes('-') ? 'asc' : 'desc';
-    const sortBy = sort.sortProperty.replace('-', '');
-    const category = categoryId > 0 ? `category=${categoryId}` : '';
-    const search = searchValue ? `&search=${searchValue}` : '';
+    const order = sort.sortProperty.includes("-") ? "asc" : "desc";
+    const sortBy = sort.sortProperty.replace("-", "");
+    const category = categoryId > 0 ? `category=${categoryId}` : "";
+    const search = searchValue ? `&search=${searchValue}` : "";
 
     // асинхронный экшен для получения данных
     dispatch(
@@ -49,8 +58,8 @@ const Home = () => {
         sortBy,
         category,
         search,
-        currentPage,
-      }),
+        currentPage: String(currentPage),
+      })
     );
 
     window.scrollTo(0, 0);
@@ -76,13 +85,15 @@ const Home = () => {
   // При первом рендере проверяем наличие параметров в строке и при успехе сохраняем их в стор
   useEffect(() => {
     if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
+      const params = qs.parse(
+        window.location.search.substring(1)
+      ) as SearchPizzaParamsType;
 
-      const sort = sortList.find((obj) => obj.sortProperty === params.sortProperty);
+      const sort = sortList.find((obj) => obj.sortProperty === params.sortBy);
 
       const preparedPayload = {
         ...params,
-        sort,
+        sort: sort || sortList[0],
       };
 
       const comparedPayload = {
@@ -91,11 +102,12 @@ const Home = () => {
         currentPage: Number(currentPage),
       };
 
-      delete comparedPayload['sortProperty'];
+      // @ts-ignore
+      delete comparedPayload["sortProperty"];
 
       // сохраняем данные из query-строки в стор
       // dispatch заставляет компонент снова перерисоваться и запускает работу соответствующих useEffect-ов -> следующий рендер после рендера с дефолтными параметрами, когда данные в сторе изменились
-      dispatch(setFilters(preparedPayload));
+      dispatch(setFilters(comparedPayload));
 
       if (!isEqual(initialState, comparedPayload)) {
         isSearch.current = true;
@@ -112,7 +124,7 @@ const Home = () => {
     isSearch.current = false;
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 
-  const pizzas = items.map((obj) => <PizzaBlock key={obj.id} {...obj} />);
+  const pizzas = items.map((obj: any) => <PizzaBlock key={obj.id} {...obj} />);
   // create 4 fake skeletons
   const skeletons = [...new Array(4)].map((_, idx) => <Skeleton key={idx} />);
 
@@ -120,16 +132,18 @@ const Home = () => {
     <div className="container">
       <div className="content__top">
         <Categories value={categoryId} onChangeCategory={onChangeCategory} />
-        <Sort />
+        <Sort value={sort} />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      {status === 'error' ? (
+      {status === "error" ? (
         <div className="content__error-info">
           <h2>Произошла ошибка!</h2>
           <p>Не удалось получить данные! Попробуйте повторить попытку позже</p>
         </div>
       ) : (
-        <div className="content__items">{status === 'loading' ? skeletons : pizzas}</div>
+        <div className="content__items">
+          {status === "loading" ? skeletons : pizzas}
+        </div>
       )}
       <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </div>
