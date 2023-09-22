@@ -6,11 +6,15 @@ import { isEqual } from "lodash";
 
 import { useAppDispatch } from "../redux/store";
 
-import Categories from "../components/Categories";
-import PizzaBlock from "../components/PizzaBlock";
-import Sort, { sortList } from "../components/Sort";
-import Skeleton from "../components/PizzaBlock/Skeleton";
-import Pagination from "../components/Pagination";
+import {
+  Categories,
+  Sort,
+  PizzaBlock,
+  Skeleton,
+  Pagination,
+} from "../components";
+
+import { sortList } from "../components/Sort";
 
 import { SearchContext } from "../layouts/MainLayout";
 

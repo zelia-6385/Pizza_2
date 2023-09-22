@@ -19,7 +19,7 @@ type CartItemProps = {
   size: number;
 };
 
-const CartItem: FC<CartItemProps> = ({
+export const CartItem: FC<CartItemProps> = ({
   id,
   title,
   price,
@@ -136,5 +136,3 @@ const CartItem: FC<CartItemProps> = ({
     </div>
   );
 };
-
-export default CartItem;

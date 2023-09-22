@@ -12,7 +12,7 @@ import { SearchContext } from "../../layouts/MainLayout";
 
 import styles from "./Search.module.scss";
 
-const Search: FC = () => {
+export const Search: FC = () => {
   // локальный контролируемый инпут (отвечает за быстрое отображение данных в инпуте)
   const [value, setValue] = useState("");
 
@@ -80,4 +80,3 @@ const Search: FC = () => {
     </div>
   );
 };
-export default Search;

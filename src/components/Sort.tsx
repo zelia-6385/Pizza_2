@@ -25,7 +25,7 @@ export const sortList: SortItemType[] = [
   { name: "алфавиту (ASC)", sortProperty: SortPropertyEnum.TITLE_ASC },
 ];
 
-const Sort: FC<SorPropsType> = ({ value }) => {
+export const Sort: FC<SorPropsType> = memo(({ value }) => {
   const dispatch = useDispatch();
   const sortRef = useRef<HTMLDivElement>(null);
 
@@ -89,6 +89,4 @@ const Sort: FC<SorPropsType> = ({ value }) => {
       ) : null}
     </div>
   );
-};
-
-export default memo(Sort);
+});
